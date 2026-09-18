@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { PartOfSpeech, WordItem } from '../types';
 import { CrossroadSignpost } from './CrossroadSignpost';
 import { WordCard } from './WordCard';
-import { ArrowRight, HelpCircle, Compass, Footprints } from 'lucide-react';
-import { motion } from 'motion/react';
 
 interface CrossroadsStageProps {
   wordItem: WordItem;
@@ -23,161 +21,147 @@ export function CrossroadsStage({
   const [activeHoverRoad, setActiveHoverRoad] = useState<PartOfSpeech | null>(null);
 
   return (
-    <div className="w-full max-w-md mx-auto px-3 flex flex-col items-center select-none">
-      {/* Crossroads Title Banner */}
-      <div className="w-full flex items-center justify-between px-2 mb-2">
-        <div className="flex items-center gap-1.5 text-xs font-black text-amber-900 bg-amber-100/90 border border-amber-300 px-3 py-1 rounded-full shadow-2xs">
-          <Compass className="w-3.5 h-3.5 text-amber-700 animate-spin-slow" />
-          <span>현위치: 4갈래 갈림길 교차로</span>
-        </div>
-
-        <div className="flex items-center gap-1 text-[11px] text-stone-500 font-semibold">
-          <Footprints className="w-3 h-3 text-stone-400" />
-          <span>올바른 표지판을 선택하세요</span>
-        </div>
-      </div>
-
-      {/* Crossroads Visual Stage (갈림길 무대) */}
-      <div className="relative w-full rounded-3xl bg-linear-to-b from-stone-100 via-amber-50/40 to-stone-100 p-3 sm:p-4 border-2 border-stone-200/90 shadow-md overflow-hidden">
-        {/* SVG Crossroads Trails Background (4갈래 길 교차로 그래픽) */}
+    <div className="w-full max-w-md mx-auto flex-1 flex flex-col justify-between h-full select-none">
+      {/* Crossroads Visual Stage: Fills vertical space with generous immersion */}
+      <div className="relative w-full flex-1 flex flex-col justify-between min-h-[440px] sm:min-h-[480px] rounded-2xl bg-linear-to-b from-[#FAF5EB] via-[#F4EDE0] to-[#FAF5EB] p-3 sm:p-4 border border-stone-300/70 shadow-sm overflow-hidden">
+        {/* SVG Crossroads Trails: 4 distinct roads connecting central map to the 4 signposts */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none z-0"
+          viewBox="0 0 400 480"
+          preserveAspectRatio="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            {/* Trail patterns */}
-            <radialGradient id="centerJunctionGlow" cx="50%" cy="46%" r="40%">
-              <stop offset="0%" stopColor="#FEF3C7" stopOpacity="0.9" />
-              <stop offset="60%" stopColor="#FDE68A" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#F5F5F4" stopOpacity="0" />
+            {/* Center Crossroads clearing glow */}
+            <radialGradient id="crossroadCenter" cx="50%" cy="50%" r="48%">
+              <stop offset="0%" stopColor="#EFE1C9" stopOpacity="0.95" />
+              <stop offset="55%" stopColor="#E4D2B5" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#FAF5EB" stopOpacity="0" />
             </radialGradient>
 
-            <linearGradient id="roadNoun" x1="50%" y1="46%" x2="15%" y2="12%">
-              <stop offset="0%" stopColor="#10B981" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#059669" stopOpacity="0.1" />
+            {/* Earthy dirt road trail gradients */}
+            <linearGradient id="roadNoun" x1="50%" y1="50%" x2="16%" y2="10%">
+              <stop offset="0%" stopColor="#D5C2A4" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#B09774" stopOpacity="0.4" />
             </linearGradient>
 
-            <linearGradient id="roadVerb" x1="50%" y1="46%" x2="85%" y2="12%">
-              <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#D97706" stopOpacity="0.1" />
+            <linearGradient id="roadVerb" x1="50%" y1="50%" x2="84%" y2="10%">
+              <stop offset="0%" stopColor="#CCA36B" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#A97D41" stopOpacity="0.4" />
             </linearGradient>
 
-            <linearGradient id="roadAdj" x1="50%" y1="46%" x2="15%" y2="88%">
-              <stop offset="0%" stopColor="#0EA5E9" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#0284C7" stopOpacity="0.1" />
+            <linearGradient id="roadAdj" x1="50%" y1="50%" x2="16%" y2="90%">
+              <stop offset="0%" stopColor="#9B7047" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#764C26" stopOpacity="0.4" />
             </linearGradient>
 
-            <linearGradient id="roadAdv" x1="50%" y1="46%" x2="85%" y2="88%">
-              <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#7C3AED" stopOpacity="0.1" />
+            <linearGradient id="roadAdv" x1="50%" y1="50%" x2="84%" y2="90%">
+              <stop offset="0%" stopColor="#6B4B2E" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#472A11" stopOpacity="0.4" />
             </linearGradient>
           </defs>
 
-          {/* Central Junction Ambient Glow */}
-          <circle cx="50%" cy="46%" r="130" fill="url(#centerJunctionGlow)" />
+          {/* Center crossroads ground clearing */}
+          <circle cx="200" cy="240" r="130" fill="url(#crossroadCenter)" />
 
-          {/* 4 Dirt/Stone Road Branch Bands */}
-          {/* Path 1: To Top-Left (Noun) */}
+          {/* Road 1: Top-Left (Noun Road) */}
           <line
-            x1="50%"
-            y1="46%"
-            x2="15%"
-            y2="15%"
+            x1="200"
+            y1="240"
+            x2="65"
+            y2="55"
             stroke="url(#roadNoun)"
             strokeWidth={activeHoverRoad === 'noun' ? '32' : '22'}
             strokeLinecap="round"
-            className="transition-all duration-300"
+            className="transition-all duration-200"
           />
           <line
-            x1="50%"
-            y1="46%"
-            x2="15%"
-            y2="15%"
-            stroke="#047857"
-            strokeWidth="3"
-            strokeDasharray="6 6"
+            x1="200"
+            y1="240"
+            x2="65"
+            y2="55"
+            stroke="#947854"
+            strokeWidth="2.5"
+            strokeDasharray="5 5"
             strokeLinecap="round"
-            className="animate-pulse"
+            strokeOpacity={activeHoverRoad === 'noun' ? '0.9' : '0.45'}
           />
 
-          {/* Path 2: To Top-Right (Verb) */}
+          {/* Road 2: Top-Right (Verb Road) */}
           <line
-            x1="50%"
-            y1="46%"
-            x2="85%"
-            y2="15%"
+            x1="200"
+            y1="240"
+            x2="335"
+            y2="55"
             stroke="url(#roadVerb)"
             strokeWidth={activeHoverRoad === 'verb' ? '32' : '22'}
             strokeLinecap="round"
-            className="transition-all duration-300"
+            className="transition-all duration-200"
           />
           <line
-            x1="50%"
-            y1="46%"
-            x2="85%"
-            y2="15%"
-            stroke="#B45309"
-            strokeWidth="3"
-            strokeDasharray="6 6"
+            x1="200"
+            y1="240"
+            x2="335"
+            y2="55"
+            stroke="#754E20"
+            strokeWidth="2.5"
+            strokeDasharray="5 5"
             strokeLinecap="round"
-            className="animate-pulse"
+            strokeOpacity={activeHoverRoad === 'verb' ? '0.9' : '0.45'}
           />
 
-          {/* Path 3: To Bottom-Left (Adjective) */}
+          {/* Road 3: Bottom-Left (Adjective Road) */}
           <line
-            x1="50%"
-            y1="46%"
-            x2="15%"
-            y2="82%"
+            x1="200"
+            y1="240"
+            x2="65"
+            y2="425"
             stroke="url(#roadAdj)"
             strokeWidth={activeHoverRoad === 'adjective' ? '32' : '22'}
             strokeLinecap="round"
-            className="transition-all duration-300"
+            className="transition-all duration-200"
           />
           <line
-            x1="50%"
-            y1="46%"
-            x2="15%"
-            y2="82%"
-            stroke="#0369A1"
-            strokeWidth="3"
-            strokeDasharray="6 6"
+            x1="200"
+            y1="240"
+            x2="65"
+            y2="425"
+            stroke="#4F2D13"
+            strokeWidth="2.5"
+            strokeDasharray="5 5"
             strokeLinecap="round"
-            className="animate-pulse"
+            strokeOpacity={activeHoverRoad === 'adjective' ? '0.9' : '0.45'}
           />
 
-          {/* Path 4: To Bottom-Right (Adverb) */}
+          {/* Road 4: Bottom-Right (Adverb Road) */}
           <line
-            x1="50%"
-            y1="46%"
-            x2="85%"
-            y2="82%"
+            x1="200"
+            y1="240"
+            x2="335"
+            y2="425"
             stroke="url(#roadAdv)"
             strokeWidth={activeHoverRoad === 'adverb' ? '32' : '22'}
             strokeLinecap="round"
-            className="transition-all duration-300"
+            className="transition-all duration-200"
           />
           <line
-            x1="50%"
-            y1="46%"
-            x2="85%"
-            y2="82%"
-            stroke="#6D28D9"
-            strokeWidth="3"
-            strokeDasharray="6 6"
+            x1="200"
+            y1="240"
+            x2="335"
+            y2="425"
+            stroke="#2D1808"
+            strokeWidth="2.5"
+            strokeDasharray="5 5"
             strokeLinecap="round"
-            className="animate-pulse"
+            strokeOpacity={activeHoverRoad === 'adverb' ? '0.9' : '0.45'}
           />
 
-          {/* Crossroads Center Marker Ring */}
-          <circle cx="50%" cy="46%" r="56" stroke="#D97706" strokeWidth="2" strokeDasharray="4 3" fill="none" />
+          {/* Directional intersection compass ring */}
+          <circle cx="200" cy="240" r="64" stroke="#CBB99C" strokeWidth="1.5" strokeDasharray="3 3" fill="none" opacity="0.6" />
         </svg>
 
-        {/* Real Central Signpost Pole (원목 표지판 기둥) */}
-        <div className="absolute left-1/2 top-4 bottom-4 -translate-x-1/2 w-4 bg-linear-to-r from-amber-900 via-amber-700 to-amber-950 rounded-full shadow-md z-0 opacity-80 pointer-events-none" />
-
-        {/* Top Two Signposts: Noun (Left) and Verb (Right) */}
-        <div className="grid grid-cols-2 gap-3 relative z-10 mb-3">
+        {/* Top Row: Two Primary Selectable Signposts (명사 & 동사) */}
+        <div className="grid grid-cols-2 gap-2.5 relative z-10 pt-0.5">
           <div
             onMouseEnter={() => setActiveHoverRoad('noun')}
             onMouseLeave={() => setActiveHoverRoad(null)}
@@ -185,7 +169,6 @@ export function CrossroadsStage({
             <CrossroadSignpost
               posKey="noun"
               direction="left"
-              roadNumber="1번 길"
               isHighlighted={activeHoverRoad === 'noun'}
               disabled={disabled}
               onClick={() => onSelectPos('noun')}
@@ -199,7 +182,6 @@ export function CrossroadsStage({
             <CrossroadSignpost
               posKey="verb"
               direction="right"
-              roadNumber="2번 길"
               isHighlighted={activeHoverRoad === 'verb'}
               disabled={disabled}
               onClick={() => onSelectPos('verb')}
@@ -207,8 +189,8 @@ export function CrossroadsStage({
           </div>
         </div>
 
-        {/* Center: The Word Card standing at the Crossroads */}
-        <div className="relative z-20 my-1">
+        {/* Center: The Word Card (The Hero protagonist at the crossroads) */}
+        <div className="relative z-20 my-auto py-2">
           <WordCard
             wordItem={wordItem}
             soundEnabled={soundEnabled}
@@ -218,8 +200,8 @@ export function CrossroadsStage({
           />
         </div>
 
-        {/* Bottom Two Signposts: Adjective (Left) and Adverb (Right) */}
-        <div className="grid grid-cols-2 gap-3 relative z-10 mt-3">
+        {/* Bottom Row: Two Primary Selectable Signposts (형용사 & 부사) */}
+        <div className="grid grid-cols-2 gap-2.5 relative z-10 pb-0.5">
           <div
             onMouseEnter={() => setActiveHoverRoad('adjective')}
             onMouseLeave={() => setActiveHoverRoad(null)}
@@ -227,7 +209,6 @@ export function CrossroadsStage({
             <CrossroadSignpost
               posKey="adjective"
               direction="left"
-              roadNumber="3번 길"
               isHighlighted={activeHoverRoad === 'adjective'}
               disabled={disabled}
               onClick={() => onSelectPos('adjective')}
@@ -241,7 +222,6 @@ export function CrossroadsStage({
             <CrossroadSignpost
               posKey="adverb"
               direction="right"
-              roadNumber="4번 길"
               isHighlighted={activeHoverRoad === 'adverb'}
               disabled={disabled}
               onClick={() => onSelectPos('adverb')}
@@ -250,21 +230,18 @@ export function CrossroadsStage({
         </div>
       </div>
 
-      {/* Bottom Action: Next Button (모를 때 갈림길 건너뛰기) */}
-      <div className="w-full mt-3">
-        <motion.button
+      {/* Bottom Subordinate Action: Quiet Next Skip Link */}
+      <div className="w-full flex justify-center py-2 shrink-0">
+        <button
           id="btn-next-skip"
           type="button"
           disabled={disabled}
           onClick={onSkip}
-          whileHover={!disabled ? { scale: 1.01 } : {}}
-          whileTap={!disabled ? { scale: 0.98 } : {}}
-          className="w-full py-3 px-4 rounded-2xl border border-stone-300 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="text-stone-500 hover:text-stone-800 text-xs py-1.5 px-3.5 rounded-md transition-colors inline-flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed hover:bg-stone-200/50"
         >
-          <HelpCircle className="w-4 h-4 text-stone-500" />
-          <span>길을 모르겠다면? <strong className="text-stone-950 underline underline-offset-2 font-black">Next (이 갈림길 넘어가기)</strong></span>
-          <ArrowRight className="w-4 h-4 text-stone-500" />
-        </motion.button>
+          <span>길을 모르겠다면?</span>
+          <span className="font-semibold text-stone-700 underline underline-offset-2">Next →</span>
+        </button>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Volume2, Move, Sparkles, Compass } from 'lucide-react';
+import { Volume2, Move } from 'lucide-react';
 import { motion, PanInfo } from 'motion/react';
 import { WordItem, PartOfSpeech } from '../types';
 import { speakEnglishWord, playClickSound } from '../utils/audio';
@@ -44,7 +44,7 @@ export function WordCard({
       const pos = el.getAttribute('data-pos-sign') as PartOfSpeech | null;
       if (!pos) return;
 
-      // Generous hitbox margin (+25px in all directions): 닿게만 해도 유효!
+      // Generous hitbox margin (+25px in all directions): 닿기만 해도 유효!
       const margin = 25;
       const targetBounds = {
         left: rect.left - margin,
@@ -132,155 +132,115 @@ export function WordCard({
         whileHover={!disabled ? { scale: 1.02 } : {}}
         whileTap={!disabled ? { scale: 0.98 } : {}}
         id="draggable-word-card"
-        className={`relative w-full max-w-[290px] sm:max-w-[310px] select-none touch-manipulation cursor-grab active:cursor-grabbing transition-all ${
+        className={`relative w-full max-w-[285px] sm:max-w-[315px] select-none touch-manipulation cursor-grab active:cursor-grabbing transition-all ${
           isDragging ? 'z-50 scale-105 rotate-1' : 'z-20'
         }`}
       >
-        {/* Left Explorer Hand Gripping Map */}
-        <div className="absolute -left-5 sm:-left-6 top-1/2 -translate-y-1/2 z-30 pointer-events-none drop-shadow-md">
-          <svg width="42" height="68" viewBox="0 0 42 68" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Blue explorer jacket sleeve */}
-            <path
-              d="M0 16C0 11.5817 3.58172 8 8 8H16C18.2091 8 20 9.79086 20 12V56C20 58.2091 18.2091 60 16 60H8C3.58172 60 0 56.4183 0 52V16Z"
-              fill="#2563EB"
-            />
-            <path d="M14 8V60" stroke="#1D4ED8" strokeWidth="2.5" />
-            {/* Sleeve cuff border */}
-            <rect x="14" y="10" width="6" height="48" rx="3" fill="#60A5FA" />
-            {/* Explorer palm base */}
-            <rect x="16" y="16" width="16" height="36" rx="8" fill="#FED7AA" />
-            {/* Fingers curled behind */}
-            <rect x="22" y="18" width="14" height="8" rx="4" fill="#FDBA74" />
-            <rect x="23" y="27" width="14" height="8" rx="4" fill="#FDBA74" />
-            <rect x="23" y="36" width="14" height="8" rx="4" fill="#FDBA74" />
-            <rect x="21" y="45" width="14" height="7" rx="3.5" fill="#FDBA74" />
-            {/* Thumb curled over the FRONT of the map parchment */}
-            <ellipse
-              cx="30"
-              cy="33"
-              rx="7"
-              ry="11"
-              transform="rotate(-15 30 33)"
-              fill="#FED7AA"
-              stroke="#EA580C"
-              strokeWidth="1.2"
-            />
-            {/* Thumb nail */}
-            <ellipse
-              cx="32"
-              cy="31"
-              rx="2.5"
-              ry="3.8"
-              transform="rotate(-15 32 31)"
-              fill="#FFFBEB"
-            />
+        {/* ====================================================================== */}
+        {/* Hands: Just ONE Circle (동그라미 하나만! 손가락 없음)                  */}
+        {/* ====================================================================== */}
+
+        {/* Left Arm & Hand: 소매 위치는 고정하고 손 동그라미를 소매 중심에 맞춰 바깥쪽으로 이동 */}
+        <div className="absolute -left-5 sm:-left-6 -bottom-3 w-20 sm:w-22 h-20 pointer-events-none z-30 drop-shadow-md">
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+            {/* Hand circle: drawn first (underneath the sleeve, moved outward from cx=50 to cx=43) */}
+            <circle cx="43" cy="35" r="12" fill="#FED7AA" stroke="#FED7AA" />
+
+            {/* Grey arm sleeve angled inward directly towards the hand (고정) */}
+            <path d="M8 80 L34 32 L52 42 L28 80 Z" fill="#94A3B8" />
+            <path d="M12 80 L36 34 L48 40 L22 80 Z" fill="#CBD5E1" />
+            {/* Ribbed sleeve cuff overlapping the base of the hand */}
+            <path d="M32 31 L52 42 L48 48 L28 37 Z" fill="#94A3B8" stroke="#64748B" strokeWidth="1.2" />
           </svg>
         </div>
 
-        {/* Right Explorer Hand Gripping Map */}
-        <div className="absolute -right-5 sm:-right-6 top-1/2 -translate-y-1/2 z-30 pointer-events-none drop-shadow-md">
-          <svg width="42" height="68" viewBox="0 0 42 68" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Blue explorer jacket sleeve */}
-            <path
-              d="M42 16C42 11.5817 38.4183 8 34 8H26C23.7909 8 22 9.79086 22 12V56C22 58.2091 23.7909 60 26 60H34C38.4183 60 42 56.4183 42 52V16Z"
-              fill="#2563EB"
-            />
-            <path d="M28 8V60" stroke="#1D4ED8" strokeWidth="2.5" />
-            {/* Sleeve cuff border */}
-            <rect x="22" y="10" width="6" height="48" rx="3" fill="#60A5FA" />
-            {/* Explorer palm base */}
-            <rect x="10" y="16" width="16" height="36" rx="8" fill="#FED7AA" />
-            {/* Fingers curled behind */}
-            <rect x="6" y="18" width="14" height="8" rx="4" fill="#FDBA74" />
-            <rect x="5" y="27" width="14" height="8" rx="4" fill="#FDBA74" />
-            <rect x="5" y="36" width="14" height="8" rx="4" fill="#FDBA74" />
-            <rect x="7" y="45" width="14" height="7" rx="3.5" fill="#FDBA74" />
-            {/* Thumb curled over the FRONT of the map parchment */}
-            <ellipse
-              cx="12"
-              cy="33"
-              rx="7"
-              ry="11"
-              transform="rotate(15 12 33)"
-              fill="#FED7AA"
-              stroke="#EA580C"
-              strokeWidth="1.2"
-            />
-            {/* Thumb nail */}
-            <ellipse
-              cx="10"
-              cy="31"
-              rx="2.5"
-              ry="3.8"
-              transform="rotate(15 10 31)"
-              fill="#FFFBEB"
-            />
+        {/* Right Arm & Hand: 소매 위치는 고정하고 손 동그라미를 소매 중심에 맞춰 바깥쪽으로 이동 */}
+        <div className="absolute -right-5 sm:-right-6 -bottom-3 w-20 sm:w-22 h-20 pointer-events-none z-30 drop-shadow-md">
+          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+            {/* Hand circle: drawn first (underneath the sleeve, moved outward from cx=30 to cx=37) */}
+            <circle cx="37" cy="35" r="12" fill="#FED7AA" stroke="#FED7AA" />
+
+            {/* Grey arm sleeve angled inward directly towards the hand (고정) */}
+            <path d="M72 80 L46 32 L28 42 L52 80 Z" fill="#94A3B8" />
+            <path d="M68 80 L44 34 L32 40 L58 80 Z" fill="#CBD5E1" />
+            {/* Ribbed sleeve cuff overlapping the base of the hand */}
+            <path d="M48 31 L28 42 L32 48 L52 37 Z" fill="#94A3B8" stroke="#64748B" strokeWidth="1.2" />
           </svg>
         </div>
 
-        {/* Vintage Parchment Map Body */}
+        {/* ====================================================================== */}
+        {/* Folded Map Shape: 6-Panel Accordion Silhouette (6칸으로 나뉜 지도)    */}
+        {/* ====================================================================== */}
         <div
-          className={`relative overflow-hidden rounded-2xl border-2 p-3.5 sm:p-4 text-center shadow-xl transition-all ${
+          className={`relative overflow-hidden py-3 px-3.5 sm:px-4 text-center shadow-lg transition-all ${
             isDragging
-              ? 'border-amber-500 shadow-2xl ring-4 ring-amber-400/70 bg-amber-50'
-              : 'border-amber-700/60 bg-linear-to-b from-[#FEF9E7] via-[#FFFDF5] to-[#FDF6D8] hover:border-amber-600'
+              ? 'bg-[#FEF5E7] shadow-2xl ring-3 ring-amber-400/80 scale-102'
+              : 'bg-linear-to-b from-[#FFFDF8] via-[#FAF4E5] to-[#F5EAD2]'
           }`}
+          style={{
+            // 6-fold accordion folded map silhouette (6칸 지그재그 부채꼴 지도 테두리)
+            clipPath:
+              'polygon(0% 2.5%, 16.67% 0%, 33.33% 2.5%, 50% 0%, 66.67% 2.5%, 83.33% 0%, 100% 2.5%, 100% 97.5%, 83.33% 100%, 66.67% 97.5%, 50% 100%, 33.33% 97.5%, 16.67% 100%, 0% 97.5%)',
+          }}
         >
-          {/* Antique Map Background Texture & Coordinates */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#D97706_1px,transparent_1px)] [background-size:12px_12px]" />
-          <Compass className="absolute -right-3 -bottom-3 w-20 h-20 text-amber-900/10 pointer-events-none" />
+          {/* 6-Fold Map Creases: 6 equal vertical panels with alternating fold lighting (6칸 나뉨) */}
+          <div className="absolute inset-0 flex pointer-events-none">
+            {/* Panel 1 (0% ~ 16.67%) */}
+            <div className="w-[16.666%] h-full border-r border-amber-900/10 bg-white/10" />
+            {/* Panel 2 (16.67% ~ 33.33%) */}
+            <div className="w-[16.666%] h-full border-r border-amber-900/10 bg-amber-950/[0.04]" />
+            {/* Panel 3 (33.33% ~ 50.00%) */}
+            <div className="w-[16.666%] h-full border-r border-amber-900/10 bg-white/10" />
+            {/* Panel 4 (50.00% ~ 66.67%) */}
+            <div className="w-[16.666%] h-full border-r border-amber-900/10 bg-amber-950/[0.04]" />
+            {/* Panel 5 (66.67% ~ 83.33%) */}
+            <div className="w-[16.666%] h-full border-r border-amber-900/10 bg-white/10" />
+            {/* Panel 6 (83.33% ~ 100%) */}
+            <div className="w-[16.67%] h-full bg-amber-950/[0.04]" />
+          </div>
 
-          {/* Map Inner Stitched Border */}
-          <div className="absolute inset-1.5 border border-dashed border-amber-600/30 rounded-xl pointer-events-none" />
+          {/* Paper Edge Border */}
+          <div className="absolute inset-0 border-2 border-[#9C7A4E]/50 pointer-events-none" />
 
-          {/* Map Header: Explorer Compass Tag */}
-          <div className="relative z-10 flex items-center justify-between px-1 mb-1">
-            <div className="inline-flex items-center gap-1 text-[10px] font-black text-amber-900 bg-amber-200/80 border border-amber-400/70 px-2 py-0.5 rounded-full shadow-2xs">
-              <Compass className="w-3 h-3 text-amber-700" />
-              <span>탐험 지도 · 길찾기 중</span>
+          {/* Target Content */}
+          <div className="relative z-10 flex flex-col items-center justify-center">
+            {/* 1. THE HERO: Current English Word */}
+            <div className="flex items-center justify-center gap-2 mt-0.5 mb-1 max-w-full">
+              <h2 className="text-2xl sm:text-3xl font-black text-[#26170A] tracking-tight font-serif drop-shadow-2xs break-all leading-tight">
+                {wordItem.word}
+              </h2>
+
+              {/* TTS Speaker Audio Button */}
+              <button
+                id="btn-speak-word"
+                type="button"
+                onClick={handleSpeak}
+                title="원어민 발음 듣기"
+                className="p-1.5 rounded-full bg-[#E8D2AA]/80 hover:bg-[#DCBE8C] text-[#3D250C] transition-transform active:scale-90 shrink-0 shadow-2xs cursor-pointer"
+                aria-label="발음 듣기"
+              >
+                <Volume2 className="w-4 h-4" />
+              </button>
             </div>
 
-            <span className="text-[9px] font-mono text-amber-800/70 font-semibold tracking-wider">
-              LAT 37° / LON 127°
-            </span>
-          </div>
+            {/* 2. 어근 정보 */}
+            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#E8DAC2]/80 border border-[#BFA782]/70 rounded-full text-[11px] text-[#4A3215] font-bold shadow-2xs my-0.5">
+              <span>어근 · <strong>{wordItem.rootName}</strong></span>
+            </div>
 
-          {/* Root Family Banner (어원 족보 스탬프) */}
-          <div className="relative z-10 inline-flex items-center gap-1 px-2.5 py-0.5 bg-amber-100 border border-amber-300 rounded-md text-[11px] text-amber-950 font-extrabold my-1 shadow-2xs">
-            <Sparkles className="w-3 h-3 text-amber-600" />
-            <span>뿌리: {wordItem.rootName}</span>
-          </div>
-
-          {/* Target Word in Map Center */}
-          <div className="relative z-10 flex items-center justify-center gap-2 my-1">
-            <h2 className="text-2xl sm:text-3xl font-black text-stone-900 tracking-tight font-serif drop-shadow-xs break-all">
-              {wordItem.word}
-            </h2>
-
-            <button
-              id="btn-speak-word"
-              type="button"
-              onClick={handleSpeak}
-              title="원어민 발음 듣기"
-              className="p-1.5 rounded-full bg-amber-200 hover:bg-amber-300 text-amber-950 transition-transform active:scale-90 shrink-0 shadow-2xs"
-              aria-label="발음 듣기"
-            >
-              <Volume2 className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Visual Instruction Cue */}
-          <div className="relative z-10 flex items-center justify-center gap-1 text-[11px] text-amber-900 font-bold mt-1">
-            <Move className="w-3.5 h-3.5 text-amber-700 animate-bounce shrink-0" />
-            <span>
-              {isDragging && currentTouchingPos ? (
-                <strong className="text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
-                  표지판에 닿음! 손을 놓으세요 🎯
-                </strong>
-              ) : (
-                '지도를 들고 원하는 표지판에 닿게 놓으세요!'
-              )}
-            </span>
+            {/* 3. Action Cue */}
+            <div className="flex items-center justify-center gap-1 text-[10.5px] font-medium text-[#7A552C] mt-1">
+              <Move className="w-3 h-3 text-[#A86F2C] animate-bounce shrink-0" />
+              <span>
+                {isDragging && currentTouchingPos ? (
+                  <strong className="text-amber-950 bg-amber-300/80 px-2 py-0.5 rounded font-black">
+                    표지판에 닿음! 손을 놓으세요 🎯
+                  </strong>
+                ) : (
+                  '표지판을 누르거나 지도를 대어보세요'
+                )}
+              </span>
+            </div>
           </div>
         </div>
       </motion.div>

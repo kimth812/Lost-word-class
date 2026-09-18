@@ -6,7 +6,6 @@ import { motion } from 'motion/react';
 interface CrossroadSignpostProps {
   posKey: PartOfSpeech;
   direction: 'left' | 'right';
-  roadNumber: string; // e.g. "1번 길", "2번 길"
   isHighlighted?: boolean;
   disabled?: boolean;
   onClick: () => void;
@@ -19,10 +18,17 @@ const POS_ICONS: Record<PartOfSpeech, React.ComponentType<{ className?: string }
   adverb: Compass,
 };
 
+// Clean formatted suffix clues using mid-dots (·)
+const CLEAN_SUFFIX_TIPS: Record<PartOfSpeech, string> = {
+  noun: '-tion · -ment · -ness · -ty',
+  verb: '-ate · -ize · -en · -fy',
+  adjective: '-ful · -able · -ive · -al · -ous',
+  adverb: '-ly (형용사 + ly)',
+};
+
 export function CrossroadSignpost({
   posKey,
   direction,
-  roadNumber,
   isHighlighted,
   disabled,
   onClick,
@@ -30,140 +36,157 @@ export function CrossroadSignpost({
   const config = POS_CONFIG[posKey];
   const Icon = POS_ICONS[posKey];
   const isLeft = direction === 'left';
+  const suffixText = CLEAN_SUFFIX_TIPS[posKey];
 
-  // Distinct road colors
-  const colorThemes = {
+  // Natural wood plank color themes: unified wood hues with differing brightness levels
+  const woodThemes = {
+    // 1. Noun: 밝은 살색/베이지 자작나무 (Light Birch Wood - Brightest)
     noun: {
-      boardBg: 'from-emerald-700 via-emerald-800 to-teal-900',
-      boardBorder: 'border-emerald-400',
-      accentGlow: 'shadow-emerald-500/30 ring-emerald-400',
-      badgeBg: 'bg-emerald-400 text-emerald-950',
-      arrowColor: 'text-emerald-300',
-      subText: 'text-emerald-100',
-      bolt: 'bg-emerald-300',
+      boardBg: 'from-[#EFE4D3] via-[#E4D4BC] to-[#D5C2A4]',
+      boardBorder: 'border-[#947854]',
+      boardShadow: 'shadow-[#8C6D4C]/25',
+      titleText: 'text-[#3E2815]',
+      krText: 'text-[#61442B]',
+      clueText: 'text-[#4A321B]',
+      arrowColor: 'text-[#5C3E24]',
+      iconBg: 'bg-[#5C3E24]/12 text-[#4A321B]',
+      bolt: 'bg-[#826647] border-[#4A3521]',
+      glowRing: 'ring-[#826647] ring-offset-1 shadow-md shadow-[#826647]/40',
+      stakeBg: 'from-[#C9B393] to-[#B09774]',
     },
+    // 2. Verb: 따뜻한 황토색 나무 (Warm Ochre Wood - Medium Bright)
     verb: {
-      boardBg: 'from-amber-700 via-amber-800 to-orange-900',
-      boardBorder: 'border-amber-400',
-      accentGlow: 'shadow-amber-500/30 ring-amber-400',
-      badgeBg: 'bg-amber-300 text-amber-950',
-      arrowColor: 'text-amber-300',
-      subText: 'text-amber-100',
-      bolt: 'bg-amber-300',
+      boardBg: 'from-[#CCA36B] via-[#BD9054] to-[#A97D41]',
+      boardBorder: 'border-[#754E20]',
+      boardShadow: 'shadow-[#663E14]/25',
+      titleText: 'text-[#FFFDF7]',
+      krText: 'text-[#FEF3C7]',
+      clueText: 'text-[#FFF9E5]',
+      arrowColor: 'text-[#FFF0D4]',
+      iconBg: 'bg-black/15 text-[#FFF9E5]',
+      bolt: 'bg-[#6E471E] border-[#3D250C]',
+      glowRing: 'ring-[#BD9054] ring-offset-1 shadow-md shadow-[#96632E]/40',
+      stakeBg: 'from-[#A87A41] to-[#8C612B]',
     },
+    // 3. Adjective: 차분한 미디엄 브라운 나무 (Medium Teak Wood - Medium Dark)
     adjective: {
-      boardBg: 'from-sky-700 via-sky-800 to-blue-900',
-      boardBorder: 'border-sky-400',
-      accentGlow: 'shadow-sky-500/30 ring-sky-400',
-      badgeBg: 'bg-sky-300 text-sky-950',
-      arrowColor: 'text-sky-300',
-      subText: 'text-sky-100',
-      bolt: 'bg-sky-300',
+      boardBg: 'from-[#9B7047] via-[#895E36] to-[#764C26]',
+      boardBorder: 'border-[#4F2D13]',
+      boardShadow: 'shadow-[#42220A]/25',
+      titleText: 'text-[#FFFDF8]',
+      krText: 'text-[#FDE8D0]',
+      clueText: 'text-[#FFF1E0]',
+      arrowColor: 'text-[#FCE5CB]',
+      iconBg: 'bg-black/20 text-[#FFF1E0]',
+      bolt: 'bg-[#523015] border-[#291506]',
+      glowRing: 'ring-[#895E36] ring-offset-1 shadow-md shadow-[#613D1D]/40',
+      stakeBg: 'from-[#784E29] to-[#5F3B1A]',
     },
+    // 4. Adverb: 짙은 밤색/월넛 나무 (Dark Walnut Wood - Darkest)
     adverb: {
-      boardBg: 'from-purple-700 via-purple-800 to-indigo-950',
-      boardBorder: 'border-purple-400',
-      accentGlow: 'shadow-purple-500/30 ring-purple-400',
-      badgeBg: 'bg-purple-300 text-purple-950',
-      arrowColor: 'text-purple-300',
-      subText: 'text-purple-100',
-      bolt: 'bg-purple-300',
+      boardBg: 'from-[#6B4B2E] via-[#593A1F] to-[#472A11]',
+      boardBorder: 'border-[#2D1808]',
+      boardShadow: 'shadow-[#1F0E03]/30',
+      titleText: 'text-[#FFFDF7]',
+      krText: 'text-[#EEDBC5]',
+      clueText: 'text-[#F9F0E6]',
+      arrowColor: 'text-[#ECD9C2]',
+      iconBg: 'bg-black/25 text-[#F9F0E6]',
+      bolt: 'bg-[#3B220F] border-[#1A0B02]',
+      glowRing: 'ring-[#593A1F] ring-offset-1 shadow-md shadow-[#381F0B]/40',
+      stakeBg: 'from-[#4D2F15] to-[#361E08]',
     },
   }[posKey];
 
   return (
-    <motion.button
-      id={`btn-signpost-${posKey}`}
-      data-pos-sign={posKey}
-      type="button"
-      disabled={disabled}
-      onClick={onClick}
-      whileHover={!disabled ? { scale: 1.03, y: -2 } : {}}
-      whileTap={!disabled ? { scale: 0.96 } : {}}
-      className={`group relative z-10 w-full text-left cursor-pointer select-none touch-manipulation transition-all duration-200 ${
-        disabled ? 'opacity-50 cursor-not-allowed' : ''
-      } ${isHighlighted ? 'ring-4 ring-offset-2 ' + colorThemes.accentGlow + ' scale-105 z-30' : ''}`}
-    >
-      {/* Touched notification banner during drag */}
-      {isHighlighted && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-40 bg-white text-stone-900 font-black text-[10px] px-2 py-0.5 rounded-full shadow-lg border border-amber-400 whitespace-nowrap animate-bounce">
-          🎯 손을 놓으면 이 길로 결정!
-        </div>
-      )}
-
-      {/* Real Arrowhead Signpost Plaque using CSS Clip-Path / SVG */}
+    <div className="relative w-full">
+      {/* Individual Wooden Stake planted directly into this road branch */}
       <div
-        className={`relative overflow-hidden rounded-xl border-2 ${colorThemes.boardBorder} bg-linear-to-r ${
-          colorThemes.boardBg
-        } p-3 sm:p-3.5 text-white shadow-lg transition-shadow hover:shadow-xl ${
-          isLeft ? 'pr-4 pl-3' : 'pl-4 pr-3'
-        }`}
-        style={{
-          // Authentic trail signpost pointed edge
-          clipPath: isLeft
-            ? 'polygon(16px 0%, 100% 0%, 100% 100%, 16px 100%, 0% 50%)'
-            : 'polygon(0% 0%, calc(100% - 16px) 0%, 100% 50%, calc(100% - 16px) 100%, 0% 100%)',
-        }}
+        className={`absolute bottom-0 ${
+          isLeft ? 'right-6' : 'left-6'
+        } -mb-3.5 w-3.5 h-6 bg-linear-to-b ${woodThemes.stakeBg} rounded-b-xs shadow-xs border-x border-b border-black/35 z-0 pointer-events-none`}
+      />
+
+      {/* Selectable Road Choice Button */}
+      <motion.button
+        id={`btn-signpost-${posKey}`}
+        data-pos-sign={posKey}
+        type="button"
+        disabled={disabled}
+        onClick={onClick}
+        whileHover={!disabled ? { scale: 1.03, y: -2 } : {}}
+        whileTap={!disabled ? { scale: 0.96 } : {}}
+        className={`group relative z-10 w-full text-left cursor-pointer select-none touch-manipulation transition-all duration-150 outline-hidden ${
+          disabled ? 'opacity-50 cursor-not-allowed' : ''
+        } ${isHighlighted ? 'ring-3 ' + woodThemes.glowRing + ' scale-103 z-30' : ''}`}
       >
-        {/* Subtle woodgrain horizontal texture lines */}
-        <div className="absolute inset-0 opacity-15 pointer-events-none bg-[repeating-linear-gradient(0deg,transparent,transparent_6px,rgba(0,0,0,0.4)_6px,rgba(0,0,0,0.4)_7px)]" />
+        {/* Drop indicator tooltip on drag touch */}
+        {isHighlighted && (
+          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-40 bg-amber-950 text-amber-100 font-black text-[10px] px-2 py-0.5 rounded-full shadow-md border border-amber-300 whitespace-nowrap animate-bounce">
+            🎯 놓으면 선택!
+          </div>
+        )}
 
-        {/* Mounting Bolts (🔩 나사 볼트) on the pole-attached side */}
+        {/* Clear Tactile Arrowhead Plaque Button */}
         <div
-          className={`absolute top-2 bottom-2 flex flex-col justify-between pointer-events-none ${
-            isLeft ? 'right-2' : 'left-2'
+          className={`relative overflow-hidden rounded-lg border-2 ${woodThemes.boardBorder} bg-linear-to-r ${
+            woodThemes.boardBg
+          } py-2 px-2.5 shadow-sm hover:shadow-md transition-all ${woodThemes.boardShadow} ${
+            isLeft ? 'pr-3.5 pl-2' : 'pl-3.5 pr-2'
           }`}
+          style={{
+            // Directional arrowhead cut (left points ◀, right points ▶)
+            clipPath: isLeft
+              ? 'polygon(12px 0%, 100% 0%, 100% 100%, 12px 100%, 0% 50%)'
+              : 'polygon(0% 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 0% 100%)',
+          }}
         >
-          <div className="w-2 h-2 rounded-full bg-stone-300 border border-stone-600 shadow-inner flex items-center justify-center">
-            <div className="w-1 h-0.5 bg-stone-700" />
-          </div>
-          <div className="w-2 h-2 rounded-full bg-stone-300 border border-stone-600 shadow-inner flex items-center justify-center">
-            <div className="w-1 h-0.5 bg-stone-700" />
-          </div>
-        </div>
+          {/* Subtle wood texture */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none bg-[repeating-linear-gradient(0deg,transparent,transparent_5px,rgba(0,0,0,0.3)_5px,rgba(0,0,0,0.3)_6px)]" />
 
-        {/* Plaque Content Container */}
-        <div className={`relative z-10 flex flex-col justify-between min-h-[78px] ${isLeft ? 'pl-2' : 'pr-2'}`}>
-          {/* Header row: Road number badge + Arrow Direction + English POS */}
-          <div className="flex items-center justify-between gap-1 mb-1">
-            <div className="flex items-center gap-1.5">
-              {isLeft && <ArrowLeft className={`w-4 h-4 ${colorThemes.arrowColor} shrink-0 animate-pulse`} />}
-              <span className="text-[10px] font-black uppercase tracking-wider bg-black/30 px-1.5 py-0.5 rounded text-stone-200">
-                {roadNumber}
-              </span>
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded font-mono ${colorThemes.badgeBg}`}>
-                {config.enName}
-              </span>
-            </div>
+          {/* Wooden Mounting Screws (말뚝 고정 나사) */}
+          <div
+            className={`absolute top-1.5 bottom-1.5 flex flex-col justify-between pointer-events-none ${
+              isLeft ? 'right-1.5' : 'left-1.5'
+            }`}
+          >
+            <div className={`w-1.5 h-1.5 rounded-full ${woodThemes.bolt} border shadow-2xs`} />
+            <div className={`w-1.5 h-1.5 rounded-full ${woodThemes.bolt} border shadow-2xs`} />
+          </div>
 
-            {!isLeft && (
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] font-mono opacity-80">{config.shortCode}</span>
-                <ArrowRight className={`w-4 h-4 ${colorThemes.arrowColor} shrink-0 animate-pulse`} />
+          {/* Plaque Content: Clean Hierarchy (Noun 명사 prominent, Suffix clean below) */}
+          <div className={`relative z-10 flex flex-col justify-center min-h-[46px] ${isLeft ? 'pl-1' : 'pr-1'}`}>
+            {/* Top row: Icon + Noun 명사 (Harmonious pairing, no competition) + Direction Arrow */}
+            <div className="flex items-center justify-between gap-1">
+              <div className="flex items-center gap-1.5">
+                {isLeft && <ArrowLeft className={`w-3.5 h-3.5 ${woodThemes.arrowColor} shrink-0`} />}
+                <div className={`p-0.5 rounded-md ${woodThemes.iconBg} shrink-0`}>
+                  <Icon className="w-3 h-3" />
+                </div>
+                <div className="flex items-baseline gap-1 leading-none">
+                  <span className={`text-base sm:text-lg font-black tracking-tight ${woodThemes.titleText}`}>
+                    {config.enName}
+                  </span>
+                  <span className={`text-xs font-bold ${woodThemes.krText}`}>
+                    {config.krName}
+                  </span>
+                </div>
               </div>
-            )}
-            {isLeft && <span className="text-[10px] font-mono opacity-80">{config.shortCode}</span>}
-          </div>
 
-          {/* Main Title: Korean POS with directional arrow */}
-          <div className="flex items-center gap-2 my-0.5">
-            <div className="p-1 rounded-md bg-white/15 backdrop-blur-xs shrink-0">
-              <Icon className="w-4 h-4 text-white" />
+              {!isLeft && (
+                <ArrowRight className={`w-3.5 h-3.5 ${woodThemes.arrowColor} shrink-0 ml-1`} />
+              )}
             </div>
-            <h3 className="text-xl sm:text-2xl font-black tracking-tight drop-shadow-sm leading-tight text-white">
-              {config.krName}
-            </h3>
-            <span className="text-xs text-white/80 font-normal">길</span>
-          </div>
 
-          {/* Suffix Clue / Road Milestone */}
-          <div className="mt-1 pt-1 border-t border-white/20 flex items-center justify-between text-[11px] font-medium">
-            <span className={`truncate ${colorThemes.subText}`}>
-              단서: <strong className="text-white font-bold">{config.suffixTips}</strong>
-            </span>
+            {/* Bottom: Clean Suffix Clue (-tion · -ment · -ness) */}
+            <div className="mt-1 pt-0.5 border-t border-black/10 text-[10px] sm:text-[11px] font-medium leading-tight truncate">
+              <span className={woodThemes.clueText}>
+                {suffixText}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-    </motion.button>
+      </motion.button>
+    </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Play, Compass, Award, Sparkles, ChevronRight, Zap, BookOpen } from 'lucide-react';
+import { Play, Map, Award, Sparkles, ChevronRight, Zap, BookOpen } from 'lucide-react';
 import { motion } from 'motion/react';
 import { CharacterIllustration } from './CharacterIllustration';
 
@@ -17,7 +17,7 @@ export function StartScreen({ onStartGame, bestScore, totalGamesPlayed }: StartS
       {/* Top Tag & Logo */}
       <div className="w-full flex flex-col items-center pt-2">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 border border-amber-300 rounded-full text-xs text-amber-900 font-bold mb-3 shadow-2xs">
-          <Compass className="w-3.5 h-3.5 text-amber-700" />
+          <Map className="w-3.5 h-3.5 text-amber-700" />
           <span>고등 1학년 3분 품사 길찾기</span>
         </div>
 
@@ -47,28 +47,6 @@ export function StartScreen({ onStartGame, bestScore, totalGamesPlayed }: StartS
           <span>점심시간 3분 완성!</span>
         </div>
       </motion.div>
-
-      {/* 30-Second Quick Visual Guide (고등학생이 설명 없이 바로 이해) */}
-      <div className="w-full bg-white/80 border border-stone-200/80 rounded-2xl p-3.5 shadow-xs text-left mb-4">
-        <div className="text-[11px] font-bold text-amber-800 flex items-center gap-1 mb-2 uppercase tracking-wide">
-          <Zap className="w-3 h-3 text-amber-600" />
-          <span>30초 초간단 플레이 방법</span>
-        </div>
-        <div className="grid grid-cols-3 gap-2 text-center text-xs">
-          <div className="bg-amber-50/70 p-2 rounded-xl border border-amber-200/60">
-            <div className="font-black text-amber-900 text-sm">1. 단어 확인</div>
-            <div className="text-[10px] text-stone-500 mt-0.5">화면 중앙의 영단어와 어원 힌트 보기</div>
-          </div>
-          <div className="bg-emerald-50/70 p-2 rounded-xl border border-emerald-200/60">
-            <div className="font-black text-emerald-900 text-sm">2. 갈림길 표지판</div>
-            <div className="text-[10px] text-stone-500 mt-0.5">4갈래 길 중 맞는 표지판으로 드래그 or 탭</div>
-          </div>
-          <div className="bg-sky-50/70 p-2 rounded-xl border border-sky-200/60">
-            <div className="font-black text-sky-900 text-sm">3. 족보 정복</div>
-            <div className="text-[10px] text-stone-500 mt-0.5">한 판에 같은 뿌리 4형제 단어 자동 습득</div>
-          </div>
-        </div>
-      </div>
 
       {/* Mode Selection Tabs */}
       <div className="w-full bg-stone-100 p-1.5 rounded-2xl flex items-center gap-1 mb-4 border border-stone-200">

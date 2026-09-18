@@ -203,7 +203,7 @@ export default function App() {
         )}
 
         {screen === 'game' && currentQuestion && (
-          <div className="flex-1 flex flex-col justify-between pb-6">
+          <div className="flex-1 flex flex-col min-h-0 pb-2">
             <Header
               currentIndex={currentIndex}
               totalQuestions={questions.length}
@@ -216,7 +216,7 @@ export default function App() {
             />
 
             {/* 4-Way Crossroads Stage: Trails, Signs & Word Card */}
-            <div className="flex-1 flex flex-col justify-center py-2">
+            <div className="flex-1 flex flex-col min-h-0 px-2 sm:px-3 pt-1 pb-1">
               <CrossroadsStage
                 wordItem={currentQuestion.wordItem}
                 soundEnabled={soundEnabled}
