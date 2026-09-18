@@ -1,0 +1,6 @@
+{
+  "name": "LOST! word class",
+  "description": "고등 1학년을 위한 3분 품사 파악 길찾기 단어 게임",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
