@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { GameScreen, Question, PartOfSpeech } from './types';
 import { generateStandardQuestions, generateRootMasterQuestions, generateRetryQuestions } from './utils/gameLogic';
 import { playCorrectSound, playWrongSound, playClickSound } from './utils/audio';
+import { getSavedStudentName, saveStudentName } from './utils/googleSheets';
 import { Header } from './components/Header';
 import { CrossroadsStage } from './components/CrossroadsStage';
 import { FeedbackModal } from './components/FeedbackModal';
@@ -13,6 +14,7 @@ const STORAGE_KEY_TOTAL = 'lost_word_total_games';
 
 export default function App() {
   const [screen, setScreen] = useState<GameScreen>('start');
+  const [studentName, setStudentName] = useState<string>(getSavedStudentName);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -102,6 +104,26 @@ export default function App() {
     setScreen('game');
   };
 
+  // Student name update handler
+  const handleUpdateStudentName = (name: string) => {
+    setStudentName(name);
+    saveStudentName(name);
+  };
+
+  // Increment tap count on card interactions (dragging, speaker, tap)
+  const handleIncrementCardTap = () => {
+    setQuestions((prev) => {
+      if (!prev[currentIndex]) return prev;
+      const updated = [...prev];
+      const current = updated[currentIndex];
+      updated[currentIndex] = {
+        ...current,
+        tapCount: (current.tapCount ?? 0) + 1,
+      };
+      return updated;
+    });
+  };
+
   // Handle answering or skipping
   const handleSelectPos = (selectedPos: PartOfSpeech) => {
     if (showFeedback || !questions[currentIndex]) return;
@@ -125,12 +147,13 @@ export default function App() {
       setStreak(0);
     }
 
-    // Save answer state to current question
+    // Save answer state and increment tap count to current question
     const updatedQuestions = [...questions];
     updatedQuestions[currentIndex] = {
       ...currentQ,
       userAnswer: selectedPos,
       isCorrect,
+      tapCount: (currentQ.tapCount ?? 0) + 1,
     };
     setQuestions(updatedQuestions);
     setCurrentAnswer(selectedPos);
@@ -150,6 +173,7 @@ export default function App() {
       ...currentQ,
       userAnswer: 'skipped',
       isCorrect: false,
+      tapCount: (currentQ.tapCount ?? 0) + 1,
     };
     setQuestions(updatedQuestions);
     setCurrentAnswer('skipped');
@@ -199,6 +223,8 @@ export default function App() {
             onStartGame={handleStartGame}
             bestScore={bestScore}
             totalGamesPlayed={totalGamesPlayed}
+            studentName={studentName}
+            onChangeStudentName={handleUpdateStudentName}
           />
         )}
 
@@ -223,6 +249,7 @@ export default function App() {
                 disabled={showFeedback}
                 onSelectPos={handleSelectPos}
                 onSkip={handleSkip}
+                onCardInteract={handleIncrementCardTap}
               />
             </div>
 
@@ -243,6 +270,8 @@ export default function App() {
             questions={questions}
             score={score}
             timeSpentSeconds={elapsedSeconds}
+            studentName={studentName}
+            totalGamesPlayed={totalGamesPlayed}
             onRetryWrongOnly={handleRetryWrongOnly}
             onRestartNewGame={handleRestartNewGame}
             onGoHome={() => setScreen('start')}

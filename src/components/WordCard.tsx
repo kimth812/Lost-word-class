@@ -9,6 +9,7 @@ interface WordCardProps {
   soundEnabled: boolean;
   onDropOnPos?: (pos: PartOfSpeech) => void;
   onHoverPos?: (pos: PartOfSpeech | null) => void;
+  onInteract?: () => void;
   disabled?: boolean;
 }
 
@@ -17,6 +18,7 @@ export function WordCard({
   soundEnabled,
   onDropOnPos,
   onHoverPos,
+  onInteract,
   disabled,
 }: WordCardProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -25,6 +27,7 @@ export function WordCard({
 
   const handleSpeak = (e: React.MouseEvent) => {
     e.stopPropagation();
+    onInteract?.();
     if (soundEnabled) playClickSound();
     speakEnglishWord(wordItem.word);
   };
@@ -126,7 +129,11 @@ export function WordCard({
         drag={!disabled}
         dragSnapToOrigin
         dragElastic={0.4}
-        onDragStart={() => setIsDragging(true)}
+        onDragStart={() => {
+          setIsDragging(true);
+          onInteract?.();
+        }}
+        onTap={() => onInteract?.()}
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         whileHover={!disabled ? { scale: 1.02 } : {}}

@@ -46,6 +46,21 @@ export interface Question {
   userAnswer?: PartOfSpeech | 'skipped';
   isCorrect?: boolean;
   timeTakenMs?: number;
+  tapCount?: number;
+}
+
+export interface SentenceTapStat {
+  sentence: string;
+  sentenceMeaning?: string;
+  word: string;
+  partOfSpeech: PartOfSpeech;
+  tapCount: number;
+  isCorrect?: boolean;
+}
+
+export interface SheetSaveResult {
+  success: boolean;
+  message?: string;
 }
 
 export type GameScreen = 'start' | 'game' | 'result';
@@ -54,3 +69,4 @@ export interface GameSettings {
   soundEnabled: boolean;
   ttsEnabled: boolean;
 }
+

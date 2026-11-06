@@ -1,16 +1,26 @@
 import { useState } from 'react';
-import { Play, Map, Award, Sparkles, ChevronRight, Zap, BookOpen } from 'lucide-react';
+import { Play, Map, Award, Sparkles, ChevronRight, Zap, BookOpen, User, Sheet, Settings } from 'lucide-react';
 import { motion } from 'motion/react';
 import { CharacterIllustration } from './CharacterIllustration';
+import { GoogleSheetModal } from './GoogleSheetModal';
 
 interface StartScreenProps {
   onStartGame: (mode: 'standard' | 'rootMaster') => void;
   bestScore: number | null;
   totalGamesPlayed: number;
+  studentName: string;
+  onChangeStudentName: (name: string) => void;
 }
 
-export function StartScreen({ onStartGame, bestScore, totalGamesPlayed }: StartScreenProps) {
+export function StartScreen({
+  onStartGame,
+  bestScore,
+  totalGamesPlayed,
+  studentName,
+  onChangeStudentName,
+}: StartScreenProps) {
   const [selectedMode, setSelectedMode] = useState<'standard' | 'rootMaster'>('standard');
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <div className="w-full max-w-md mx-auto px-4 py-6 flex flex-col items-center justify-between min-h-screen text-center">
@@ -47,6 +57,39 @@ export function StartScreen({ onStartGame, bestScore, totalGamesPlayed }: StartS
           <span>점심시간 3분 완성!</span>
         </div>
       </motion.div>
+
+      {/* Student Name Input & Google Sheet Sync Note */}
+      <div className="w-full bg-amber-50/70 border border-amber-200/80 rounded-2xl p-3 mb-3 text-left">
+        <div className="flex items-center justify-between gap-2 mb-1.5">
+          <label htmlFor="student-name-input" className="flex items-center gap-1.5 text-xs font-bold text-stone-800">
+            <User className="w-3.5 h-3.5 text-amber-700" />
+            <span>학습자 이름 / 학번</span>
+          </label>
+          <button
+            type="button"
+            onClick={() => setIsSettingsOpen(true)}
+            className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-300 transition-colors cursor-pointer shadow-2xs"
+            title="구글 시트 연동 설정 열기"
+          >
+            <Sheet className="w-3 h-3 text-emerald-600" />
+            <span>시트 연동 설정</span>
+            <Settings className="w-3 h-3 text-emerald-700 ml-0.5" />
+          </button>
+        </div>
+
+        <input
+          id="student-name-input"
+          type="text"
+          value={studentName}
+          onChange={(e) => onChangeStudentName(e.target.value)}
+          placeholder="예: 홍길동 (또는 10101)"
+          className="w-full px-3 py-2 bg-white border border-stone-300 rounded-xl text-xs sm:text-sm font-bold text-stone-900 focus:outline-hidden focus:ring-2 focus:ring-amber-400 focus:border-amber-400"
+          maxLength={20}
+        />
+        <p className="text-[10px] text-stone-500 mt-1 pl-0.5">
+          * 완료 시 각 문장별 탭 빈도와 평균이 구글 시트에 자동 저장됩니다.
+        </p>
+      </div>
 
       {/* Mode Selection Tabs */}
       <div className="w-full bg-stone-100 p-1.5 rounded-2xl flex items-center gap-1 mb-4 border border-stone-200">
@@ -103,6 +146,12 @@ export function StartScreen({ onStartGame, bestScore, totalGamesPlayed }: StartS
           <span>누적 플레이: {totalGamesPlayed}회</span>
         </div>
       </div>
+
+      {/* Google Sheet Integration Settings Modal */}
+      <GoogleSheetModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </div>
   );
 }

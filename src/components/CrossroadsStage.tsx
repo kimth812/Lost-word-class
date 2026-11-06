@@ -9,6 +9,7 @@ interface CrossroadsStageProps {
   disabled?: boolean;
   onSelectPos: (pos: PartOfSpeech) => void;
   onSkip: () => void;
+  onCardInteract?: () => void;
 }
 
 export function CrossroadsStage({
@@ -17,6 +18,7 @@ export function CrossroadsStage({
   disabled,
   onSelectPos,
   onSkip,
+  onCardInteract,
 }: CrossroadsStageProps) {
   const [activeHoverRoad, setActiveHoverRoad] = useState<PartOfSpeech | null>(null);
 
@@ -196,6 +198,7 @@ export function CrossroadsStage({
             soundEnabled={soundEnabled}
             onDropOnPos={onSelectPos}
             onHoverPos={setActiveHoverRoad}
+            onInteract={onCardInteract}
             disabled={disabled}
           />
         </div>
